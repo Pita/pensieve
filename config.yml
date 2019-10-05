@@ -1,5 +1,7 @@
-project: herald-lp
+projectPrefix: pita
+project: ${self:custom.projectPrefix}-pensieve
 stage: ${opt:stage, 'development'}
-region: eu-central-1
-host: produktmacher.com
+region: us-east-1
+subdomain: pensieve
+host: pitam.io
 s3FrontendBucket: ${self:custom.project}-${self:provider.stage}

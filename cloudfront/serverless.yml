@@ -3,7 +3,10 @@ service: ${self:custom.project}-cloudfront
 custom:
   region: us-east-1
   stage: ${file(../config.yml):stage}
+  projectPrefix: ${file(../config.yml):projectPrefix}
   project: ${file(../config.yml):project}
+  subdomain: ${file(../config.yml):subdomain}
+
   domain_names:
     # APP
     app_domain_name: ${self:custom.${self:provider.stage}.app_subdomain_name}.${self:custom.${self:provider.stage}.main_domain_name}
@@ -19,23 +22,23 @@ custom:
   # Stages
   development:
     main_domain_name: ${file(../config.yml):host}
-    api_subdomain_name: ${self:custom.project}-${self:provider.stage}-api
-    app_subdomain_name: ${self:custom.project}-${self:provider.stage}-app
+    api_subdomain_name: ${self:custom.subdomain}-${self:provider.stage}-api
+    app_subdomain_name: ${self:custom.subdomain}-${self:provider.stage}-app
     domain_names: ${self:custom.domain_names}
     apigateway_domainname: 3hje89pl1i
     waf_acl_default_action: ALLOW
 
   production:
     main_domain_name: ${file(../config.yml):host}
-    api_subdomain_name: ${self:custom.project}-${self:provider.stage}-api
-    app_subdomain_name: ${self:custom.project}-${self:provider.stage}-app
+    api_subdomain_name: ${self:custom.subdomain}-${self:provider.stage}-api
+    app_subdomain_name: ${self:custom.subdomain}-${self:provider.stage}-app
     domain_names: ${self:custom.domain_names}
     apigateway_domainname: 3d2hgmzne2
     waf_acl_default_action: ALLOW
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   stage: ${opt:stage, self:custom.stage}
   region: ${opt:region, self:custom.region}
 

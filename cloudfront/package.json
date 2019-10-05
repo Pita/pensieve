@@ -1,12 +1,14 @@
 {
-  "name": "herald-lp-cloudfront",
+  "name": "pensieve-cloudfront",
   "version": "0.1.0",
   "main": "index.js",
-  "license": "MIT",
+  "private": true,
   "devDependencies": {
-    "serverless": "^1.39.1"
+    "serverless": "^1.53.0"
   },
   "scripts": {
-    "sls": "sls"
+    "sls": "sls",
+    "deploy:dev": "sls deploy -s development --profile pensieve --aws-profile pensieve",
+    "deploy:prod": "sls deploy -s development --profile pensieve --aws-profile pensieve"
   }
 }

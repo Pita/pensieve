@@ -1,14 +1,13 @@
 {
-  "name": "herald-lp-backend",
+  "name": "pensieve-backend",
   "version": "0.1.0",
   "main": "index.js",
-  "author": "DieProduktMacher GmbH",
-  "license": "MIT",
+  "private": true,
   "devDependencies": {
     "@types/aws-lambda": "^8.10.23",
     "aws-lambda": "^0.1.2",
     "serverless": "^1.39.1",
-    "serverless-offline": "^4.9.2",
+    "serverless-offline": "^5.12.0",
     "serverless-plugin-typescript": "^1.1.5",
     "typescript": "^3.3.4000"
   },
@@ -16,7 +15,9 @@
     "start": "sls offline start",
     "sls": "sls",
     "maintenance": "yarn upgrade-interactive",
-    "lint": "tsc --project . --noEmit --skipLibCheck"
+    "lint": "tsc --project . --noEmit --skipLibCheck",
+    "deploy:dev": "sls deploy -s development --profile pensieve --aws-profile pensieve",
+    "deploy:prod": "sls deploy -s development --profile pensieve --aws-profile pensieve"
   },
   "dependencies": {}
 }

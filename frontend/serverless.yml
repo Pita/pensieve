@@ -1,6 +1,7 @@
 service: ${file(../config.yml):project}-frontend
 
 custom:
+  projectPrefix: ${file(../config.yml):projectPrefix}
   project: ${file(../config.yml):project}
   s3FrontendBucket: ${file(../config.yml):s3FrontendBucket}
   s3Sync:
@@ -12,7 +13,7 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   stage: ${file(../config.yml):stage}
   region: ${file(../config.yml):region}
   iamRoleStatements:

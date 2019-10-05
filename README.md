@@ -10,14 +10,6 @@ A landingpage for a secret project. More details can be found in each sections R
 
 ## URLs
 
-**Development**  
-_Backend:_ https://herald-lp-development-api.produktmacher.com  
-_Frontend:_ https://herald-lp-development-app.produktmacher.com
-
-**Production**  
-_Backend:_ https://herald-lp-production-api.produktmacher.com  
-_Frontend:_ https://herald-lp-production-app.produktmacher.com
-
 ## Development
 
 ### Runtime

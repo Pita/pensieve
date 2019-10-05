@@ -1,13 +1,15 @@
 service: ${file(../config.yml):project}-backend
 
 custom:
+  projectPrefix: ${file(../config.yml):projectPrefix}
   project: ${file(../config.yml):project}
+
   serverless-offline:
     port: 5006
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   stage: ${file(../config.yml):stage}
   region: ${file(../config.yml):region}
 
