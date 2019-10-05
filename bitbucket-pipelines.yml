@@ -1,0 +1,39 @@
+image: node:10
+
+pipelines:
+  branches:
+    develop:
+      - step:
+          name: "Deployment: Frontend"
+          script:
+            - cd frontend
+            - yarn install
+            - yarn build:dev
+            - yarn sls config credentials --provider aws --key $AWS_ACCESS_KEY_ID --secret $AWS_SECRET_ACCESS_KEY --verbose
+            - yarn sls deploy -s development
+      
+      - step:
+          name: "Deployment: Backend"
+          script:
+            - cd backend
+            - yarn install
+            - yarn sls config credentials --provider aws --key $AWS_ACCESS_KEY_ID --secret $AWS_SECRET_ACCESS_KEY --verbose
+            - yarn sls deploy -s development
+
+    master:
+      - step:
+          name: "Deployment: Frontend"
+          script:
+            - cd frontend
+            - yarn install
+            - yarn build:prod
+            - yarn sls config credentials --provider aws --key $AWS_ACCESS_KEY_ID --secret $AWS_SECRET_ACCESS_KEY --verbose
+            - yarn sls deploy -s production
+
+      - step:
+          name: "Deployment: Backend"
+          script:
+            - cd backend
+            - yarn install
+            - yarn sls config credentials --provider aws --key $AWS_ACCESS_KEY_ID --secret $AWS_SECRET_ACCESS_KEY --verbose
+            - yarn sls deploy -s production

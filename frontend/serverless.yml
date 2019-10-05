@@ -1,0 +1,50 @@
+service: ${file(../config.yml):project}-frontend
+
+custom:
+  project: ${file(../config.yml):project}
+  s3FrontendBucket: ${file(../config.yml):s3FrontendBucket}
+  s3Sync:
+    - bucketName: ${self:custom.s3FrontendBucket}
+      localDir: ./build
+
+plugins:
+  - serverless-s3-sync
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${file(../config.yml):stage}
+  region: ${file(../config.yml):region}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:ListBucket
+        - s3:PutObject
+        - s3:DeleteObject
+      Resource:
+        - "arn:aws:s3:::${self:custom.s3FrontendBucket}/*"
+        - "arn:aws:s3:::${self:custom.s3FrontendBucket}"
+
+resources:
+  Resources:
+    S3BucketStatic:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.s3FrontendBucket}
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: error.html
+
+    S3BucketStaticPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: ${self:custom.s3FrontendBucket}
+        PolicyDocument:
+          Statement:
+            - Effect: "Allow"
+              Action:
+                - "s3:GetObject"
+              Resource: "arn:aws:s3:::${self:custom.s3FrontendBucket}/*"
+              Principal: "*"

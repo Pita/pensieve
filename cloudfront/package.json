@@ -1,0 +1,12 @@
+{
+  "name": "herald-lp-cloudfront",
+  "version": "0.1.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless": "^1.39.1"
+  },
+  "scripts": {
+    "sls": "sls"
+  }
+}

@@ -1,0 +1,144 @@
+service: ${self:custom.project}-cloudfront
+
+custom:
+  region: us-east-1
+  stage: ${file(../config.yml):stage}
+  project: ${file(../config.yml):project}
+  domain_names:
+    # APP
+    app_domain_name: ${self:custom.${self:provider.stage}.app_subdomain_name}.${self:custom.${self:provider.stage}.main_domain_name}
+    app_validation_domain_name: ${self:custom.${self:provider.stage}.main_domain_name}
+    app_origin_domain_name: ${file(../config.yml):s3FrontendBucket}.s3.amazonaws.com
+
+    # API
+    api_domain_name: ${self:custom.${self:provider.stage}.api_subdomain_name}.${self:custom.${self:provider.stage}.main_domain_name}
+    api_validation_domain_name: ${self:custom.${self:provider.stage}.main_domain_name}
+    api_origin_domain_name: ${self:custom.${self:provider.stage}.apigateway_domainname}.execute-api.${file(../config.yml):region}.amazonaws.com
+    api_origin_origin_path: /${self:provider.stage}
+
+  # Stages
+  development:
+    main_domain_name: ${file(../config.yml):host}
+    api_subdomain_name: ${self:custom.project}-${self:provider.stage}-api
+    app_subdomain_name: ${self:custom.project}-${self:provider.stage}-app
+    domain_names: ${self:custom.domain_names}
+    apigateway_domainname: 3hje89pl1i
+    waf_acl_default_action: ALLOW
+
+  production:
+    main_domain_name: ${file(../config.yml):host}
+    api_subdomain_name: ${self:custom.project}-${self:provider.stage}-api
+    app_subdomain_name: ${self:custom.project}-${self:provider.stage}-app
+    domain_names: ${self:custom.domain_names}
+    apigateway_domainname: 3d2hgmzne2
+    waf_acl_default_action: ALLOW
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, self:custom.stage}
+  region: ${opt:region, self:custom.region}
+
+package:
+  individually: true
+  exclude:
+    - "**"
+
+resources:
+  Resources:
+    CertificateApp:
+      Type: AWS::CertificateManager::Certificate
+      Properties:
+        DomainName: ${self:custom.${self:provider.stage}.domain_names.app_domain_name}
+        DomainValidationOptions:
+          - DomainName: ${self:custom.${self:provider.stage}.domain_names.app_domain_name}
+            ValidationDomain: ${self:custom.${self:provider.stage}.domain_names.app_validation_domain_name}
+
+    CertificateAPI:
+      Type: AWS::CertificateManager::Certificate
+      Properties:
+        DomainName: ${self:custom.${self:provider.stage}.domain_names.api_domain_name}
+        DomainValidationOptions:
+          - DomainName: ${self:custom.${self:provider.stage}.domain_names.api_domain_name}
+            ValidationDomain: ${self:custom.${self:provider.stage}.domain_names.api_validation_domain_name}
+
+    CloudFrontDistributionApp:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Aliases:
+            - ${self:custom.${self:provider.stage}.domain_names.app_domain_name}
+          DefaultRootObject: index.html
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - HEAD
+              - GET
+            ForwardedValues:
+              QueryString: true
+            ViewerProtocolPolicy: redirect-to-https
+            DefaultTTL: 900
+            TargetOriginId: ${self:service}-${self:provider.stage}-app-s3-homepage
+          Enabled: true
+          ViewerCertificate:
+            AcmCertificateArn:
+              Ref: CertificateApp
+            MinimumProtocolVersion: TLSv1
+            SslSupportMethod: sni-only
+          PriceClass: PriceClass_100
+          Origins:
+            - Id: ${self:service}-${self:provider.stage}-app-s3-homepage
+              S3OriginConfig:
+                OriginAccessIdentity: ""
+              DomainName: ${self:custom.${self:provider.stage}.domain_names.app_origin_domain_name}
+          CustomErrorResponses:
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 403
+              ResponseCode: 200
+              ResponsePagePath: /
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /
+    
+    CloudFrontDistributionAPI:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Aliases:
+            - ${self:custom.${self:provider.stage}.domain_names.api_domain_name}
+          DefaultRootObject: ""
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - HEAD
+              - DELETE
+              - POST
+              - GET
+              - OPTIONS
+              - PUT
+              - PATCH
+            CachedMethods:
+              - HEAD
+              - GET
+              - OPTIONS
+            DefaultTTL: 1
+            MaxTTL: 10
+            MinTTL: 0
+            ForwardedValues:
+              QueryString: true
+            ViewerProtocolPolicy: https-only
+            Compress: true
+            TargetOriginId: ${self:service}-${self:provider.stage}-api-gateway
+          Enabled: true
+          ViewerCertificate:
+            AcmCertificateArn:
+              Ref: CertificateAPI
+            MinimumProtocolVersion: TLSv1
+            SslSupportMethod: sni-only
+          PriceClass: PriceClass_100
+          Origins:
+            - Id: ${self:service}-${self:provider.stage}-api-gateway
+              CustomOriginConfig:
+                HTTPSPort: 443
+                OriginProtocolPolicy: https-only
+              DomainName: ${self:custom.${self:provider.stage}.domain_names.api_origin_domain_name}
+              OriginPath: ${self:custom.${self:provider.stage}.domain_names.api_origin_origin_path}

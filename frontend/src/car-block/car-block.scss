@@ -1,0 +1,29 @@
+
+.car-block-container {
+  padding: 1rem;
+  max-width: 1024px;
+  margin: 0 auto;
+
+  .show-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+  }
+  
+  .show-more-text {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 23px;
+    color: #29A5FF;
+  }
+  
+  .show-more-arrow {
+    margin-left: 10px;
+    width: 20px;
+    height: 20px;
+    position: relative;
+    top: 2px;
+  }
+}

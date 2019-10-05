@@ -1,0 +1,29 @@
+service: ${file(../config.yml):project}-backend
+
+custom:
+  project: ${file(../config.yml):project}
+  serverless-offline:
+    port: 5006
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${file(../config.yml):stage}
+  region: ${file(../config.yml):region}
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
+functions:
+  Config:
+    handler: src/form/send.handler
+    description: Receive the data from formular and send email
+    memorySize: 1024
+    timeout: 20
+    events:
+      - http:
+          method: post
+          path: form
+          cors: true
+

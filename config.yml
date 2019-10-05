@@ -1,0 +1,5 @@
+project: herald-lp
+stage: ${opt:stage, 'development'}
+region: eu-central-1
+host: produktmacher.com
+s3FrontendBucket: ${self:custom.project}-${self:provider.stage}

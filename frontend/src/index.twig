@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AboAuto</title>
+</head>
+
+<body>
+  {% include './header/header.twig' with {'brand': 'VW'} %}
+  {% embed './car-block/car-block.twig' %}
+  {% block header %}
+  {% include './car-block/header/header.twig' with {
+          icon: 'ic_stadtflitzer.png',
+          header: 'Unsere Stadtflitzer', 
+          subheader: 'Ideal für die Stadt.'
+        } %}
+  {% endblock %}
+  {% block cars %}
+  {% include './car-block/car/car.twig' with {
+          img: 'car-stadtflitzer1.png', 
+          carName: 'Skoda Citigo',
+          price: 249,
+        } %}
+  {% include './car-block/car/car.twig' with {
+          img: 'car-stadtflitzer2.png', 
+          carName: 'Seat Ibiza',
+          price: 299,
+        } %}
+  {% include './car-block/car/car.twig' with {
+          img: 'car-stadtflitzer3.png', 
+          carName: 'BMW 1er',
+          price: 399,
+        } %}
+  {% endblock %}
+  {% endembed %}
+  {% embed './car-block/car-block.twig' %}
+  {% block header %}
+  {% include './car-block/header/header.twig' with {
+          icon: 'ic_family.png',
+          header: 'Beliebt bei Familien', 
+          subheader: 'Viel Stauraum und hohe Sicherheit, die optimalen Familienfahrzeuge.'
+        } %}
+  {% endblock %}
+  {% block cars %}
+  {% include './car-block/car/car.twig' with {
+          img: 'car-family1.png', 
+          carName: 'Skoda Octavia',
+          price: 399,
+        } %}
+  {% include './car-block/car/car.twig' with {
+          img: 'car-family2.png', 
+          carName: 'Kia Sportage',
+          price: 439,
+        } %}
+  {% include './car-block/car/car.twig' with {
+          img: 'car-family3.png', 
+          carName: 'BMW 3er Touring',
+          price: 569,
+        } %}
+  {% endblock %}
+  {% endembed %}
+  {% embed './car-block/car-block.twig' %}
+  {% block header %}
+  {% include './car-block/header/header.twig' with {
+          icon: 'ic_komfort.png',
+          header: 'Komfort', 
+          subheader: 'Unsere komfortablen Modelle.'
+        } %}
+  {% endblock %}
+  {% block cars %}
+  {% include './car-block/car/car.twig' with {
+          img: 'car-komfort1.png', 
+          carName: 'Nissan Quashquai',
+          price: 379,
+        } %}
+  {% include './car-block/car/car.twig' with {
+          img: 'car-komfort2.png', 
+          carName: 'VW Tiguan',
+          price: 499,
+        } %}
+  {% include './car-block/car/car.twig' with {
+          img: 'car-komfort3.png', 
+          carName: 'Audi Q2',
+          price: 549,
+        } %}
+  {% endblock %}
+  {% endembed %}
+  {% include './car-offer/car-offer.twig' with {
+    img: 'car-komfort3.png', 
+    carName: 'Audi A1',
+    price: 379,
+    priceOffer: 299,
+  } %}
+  {% include './form-overlay/form-overlay.twig' %}
+</body>
+
+</html>
