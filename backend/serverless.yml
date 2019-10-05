@@ -17,15 +17,19 @@ plugins:
   - serverless-plugin-typescript
   - serverless-offline
 
+package:
+  include:
+    - secrets
+
 functions:
-  Config:
-    handler: src/form/send.handler
-    description: Receive the data from formular and send email
-    memorySize: 1024
-    timeout: 20
+  startSession:
+    handler: src/startSession/startSession.handler
+    description: Start the session, receives otp, returns jwt
+    memorySize: 128
+    timeout: 3
     events:
       - http:
           method: post
-          path: form
-          cors: true
+          path: startSession
+          cors: true # TODO: security should probably be more tight
 

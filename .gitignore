@@ -58,3 +58,5 @@ log/
 ehthumbs.db
 Thumbs.db
 backend/src/pdf/files/*.pdf
+
+secrets

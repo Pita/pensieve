@@ -1,0 +1,10 @@
+{
+  "name": "pensieve-init-secrets",
+  "version": "0.1.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "qrcode": "^1.4.2",
+    "speakeasy": "^2.0.0"
+  }
+}

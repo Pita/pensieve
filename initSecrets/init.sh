@@ -1,0 +1,2 @@
+./generateJWTKey.sh
+./generateOTPSecret.sh

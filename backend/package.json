@@ -19,5 +19,8 @@
     "deploy:dev": "sls deploy -s development --profile pensieve --aws-profile pensieve",
     "deploy:prod": "sls deploy -s development --profile pensieve --aws-profile pensieve"
   },
-  "dependencies": {}
+  "dependencies": {
+    "jsonwebtoken": "^8.5.1",
+    "speakeasy": "^2.0.0"
+  }
 }
