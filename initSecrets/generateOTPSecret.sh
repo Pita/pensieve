@@ -1,9 +1,9 @@
 echo "generate otp secret...";
-if [ -f "../backend/secrets/otp/secret.json" ]; then
+if [ -f "../secrets/otp/secret.json" ]; then
   echo "skipped"
   exit 
 fi
 
-mkdir -p ../backend/secrets/otp
-node ./generateOTPSecret.js
+mkdir -p ../secrets/otp
+node_modules/.bin/ts-node ./generateOTPSecret.ts
 echo "done"

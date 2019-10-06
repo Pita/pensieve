@@ -17,10 +17,6 @@ plugins:
   - serverless-plugin-typescript
   - serverless-offline
 
-package:
-  include:
-    - secrets
-
 functions:
   startSession:
     handler: src/startSession/startSession.handler
