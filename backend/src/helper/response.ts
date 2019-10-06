@@ -12,5 +12,5 @@ const sendResponse = (data: any = {}, statusCode: number) => {
 };
 
 export const serverError = (data: any) => sendResponse(data, 500);
-export const clientError = (data: any) => sendResponse(data, 500);
+export const clientError = (data: any) => sendResponse(data, 400);
 export const success = (data: any) => sendResponse(data, 200);
