@@ -4,12 +4,21 @@ import {
   encodeBase64,
 } from "tweetnacl-util";
 import prompts from "prompts";
+import bcrypt from "bcryptjs";
 import * as fs from "fs";
 
 const newNonce = () => randomBytes(secretbox.nonceLength);
 
-const keyFromPassword = (password: string) => {
-  return hash(decodeUTF8(password)).slice(0, 32);
+const generateBcryptSalt = () => {
+  // bcrypt 11 rounds (about 300ms on my 2018 high end phone)
+  return bcrypt.genSaltSync(11);
+}
+
+const keyFromPassword = (password: string, salt: string) => {
+  // bcrypt hash 
+  const bcryptHash = bcrypt.hashSync(password, salt); 
+  // hash again with sha256 from tweetnacl and slice first 32 bytes, as thats what we need
+  return hash(decodeUTF8(bcryptHash)).slice(0, 32);
 }
 
 // TODO: move this to a central position
@@ -40,6 +49,21 @@ export const encrypt = (json: any, key: Uint8Array) => {
     },
   )).value;
 
+  await prompts(
+    {
+      type: 'password',
+      name: 'value',
+      message: 'Please repeat your WRITE password',
+      validate: (writePasswordConfirm: string) => {
+        if (writePasswordConfirm !== writePassword) {
+          return "That is not the same password, repeat the password correctly or press CTRL+C and restart";
+        }
+
+        return true
+      }
+    },
+  );
+
   const readPassword = (await prompts(
     {
       type: 'password',
@@ -55,23 +79,42 @@ export const encrypt = (json: any, key: Uint8Array) => {
     }
   )).value;
 
+  await prompts(
+    {
+      type: 'password',
+      name: 'value',
+      message: 'Please repeat your READ password',
+      validate: (readPasswordConfirm: string) => {
+        if (readPasswordConfirm !== readPassword) {
+          return "That is not the same password, repeat the password correctly or press CTRL+C and restart";
+        }
+
+        return true
+      }
+    },
+  );
+
   const keyPairWrite = box.keyPair();
   const keyPairRead = box.keyPair();
 
+  const writeSalt = generateBcryptSalt();
+  const readSalt = generateBcryptSalt();
   const keys = {
     write: {
       public: encodeBase64(keyPairWrite.publicKey),
       secretEncrypted: encrypt(
         encodeBase64(keyPairWrite.secretKey),
-        keyFromPassword(writePassword)
+        keyFromPassword(writePassword, writeSalt)
       ),
+      secretPasswordSalt: writeSalt
     },
     read: {
       public: encodeBase64(keyPairRead.publicKey),
       secretEncrypted: encrypt(
         encodeBase64(keyPairRead.secretKey),
-        keyFromPassword(readPassword)
+        keyFromPassword(readPassword, readSalt)
       ),
+      secretPasswordSalt: readSalt
     },
   }
 
