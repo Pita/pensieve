@@ -25,7 +25,7 @@ custom:
     api_subdomain_name: ${self:custom.subdomain}-${self:provider.stage}-api
     app_subdomain_name: ${self:custom.subdomain}-${self:provider.stage}-app
     domain_names: ${self:custom.domain_names}
-    apigateway_domainname: 3hje89pl1i
+    apigateway_domainname: 5n1xo4q2zj
     waf_acl_default_action: ALLOW
 
   production:
@@ -46,6 +46,25 @@ package:
   individually: true
   exclude:
     - "**"
+  include:
+    - securityHeaders.js
+
+plugins:
+  - '@silvermine/serverless-plugin-cloudfront-lambda-edge'
+
+functions:
+  securityHeaders:
+    name: '${self:custom.${self:provider.stage}.app_subdomain_name}-viewer-request'
+    handler: securityHeaders.handler
+    memorySize: 128
+    timeout: 1
+    lambdaAtEdge:
+      -
+        distribution: 'CloudFrontDistributionApp'
+        eventType: 'viewer-response'
+      -
+        distribution: 'CloudFrontDistributionAPI'
+        eventType: 'viewer-response'
 
 resources:
   Resources:

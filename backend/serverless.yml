@@ -38,17 +38,27 @@ functions:
       - http:
           method: post
           path: startSession
-          cors: true # TODO: security should probably be more tight
-  setEntry:
-    handler: src/setEntry.handler
-    description: Sets the entry and writes it to s3
+          # cors: true # TODO: security should probably be more tight
+  status:
+    handler: src/status.handler
+    description: Check if the api is up
     memorySize: 128
     timeout: 3
     events:
       - http:
-          method: post
-          path: setEntry
-          cors: true
+          method: get
+          path: status
+          # cors: true
+  # setEntry:
+  #   handler: src/setEntry.handler
+  #   description: Sets the entry and writes it to s3
+  #   memorySize: 128
+  #   timeout: 3
+  #   events:
+  #     - http:
+  #         method: post
+  #         path: setEntry
+          # cors: true
 
 resources:
   Resources:

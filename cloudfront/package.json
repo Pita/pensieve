@@ -10,5 +10,8 @@
     "sls": "sls",
     "deploy:dev": "sls deploy -s development --profile pensieve --aws-profile pensieve",
     "deploy:prod": "sls deploy -s development --profile pensieve --aws-profile pensieve"
+  },
+  "dependencies": {
+    "@silvermine/serverless-plugin-cloudfront-lambda-edge": "^2.1.1"
   }
 }
