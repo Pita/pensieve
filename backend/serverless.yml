@@ -3,6 +3,7 @@ service: ${file(../config.yml):project}-backend
 custom:
   projectPrefix: ${file(../config.yml):projectPrefix}
   project: ${file(../config.yml):project}
+  entriesBucket: ${self:custom.project}-${self:provider.stage}-entries
 
   serverless-offline:
     port: 5006
@@ -12,6 +13,16 @@ provider:
   runtime: nodejs10.x
   stage: ${file(../config.yml):stage}
   region: ${file(../config.yml):region}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:ListBucket
+        - s3:PutObject
+        - s3:DeleteObject
+      Resource:
+        - "arn:aws:s3:::${self:custom.entriesBucket}/*"
+        - "arn:aws:s3:::${self:custom.entriesBucket}"
 
 plugins:
   - serverless-plugin-typescript
@@ -19,7 +30,7 @@ plugins:
 
 functions:
   startSession:
-    handler: src/startSession/startSession.handler
+    handler: src/startSession.handler
     description: Start the session, receives otp, returns jwt
     memorySize: 128
     timeout: 3
@@ -28,4 +39,21 @@ functions:
           method: post
           path: startSession
           cors: true # TODO: security should probably be more tight
+  setEntry:
+    handler: src/setEntry.handler
+    description: Sets the entry and writes it to s3
+    memorySize: 128
+    timeout: 3
+    events:
+      - http:
+          method: post
+          path: setEntry
+          cors: true
+
+resources:
+  Resources:
+    S3BucketStatic:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.entriesBucket}
 

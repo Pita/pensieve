@@ -1,8 +1,8 @@
 // Helper
-import { success, clientError } from "../helper/response";
+import { success, clientError } from "./response";
 import { APIGatewayEvent, Handler } from "aws-lambda";
 import speakeasy from "speakeasy";
-import secrets from "../secrets.json";
+import secrets from "./secrets.json";
 import jwt from "jsonwebtoken";
 
 function generateId() {
