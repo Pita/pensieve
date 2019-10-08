@@ -4,21 +4,17 @@ import {
   encodeBase64,
 } from "tweetnacl-util";
 import prompts from "prompts";
-import bcrypt from "bcryptjs";
 import * as fs from "fs";
+import pbkdf2 from "pbkdf2";
 
 const newNonce = () => randomBytes(secretbox.nonceLength);
 
-const generateBcryptSalt = () => {
-  // bcrypt 11 rounds (about 300ms on my 2018 high end phone)
-  return bcrypt.genSaltSync(11);
+const generateSalt = () => {
+  return encodeBase64(randomBytes(32))
 }
 
-const keyFromPassword = (password: string, salt: string) => {
-  // bcrypt hash 
-  const bcryptHash = bcrypt.hashSync(password, salt); 
-  // hash again with sha256 from tweetnacl and slice first 32 bytes, as thats what we need
-  return hash(decodeUTF8(bcryptHash)).slice(0, 32);
+const keyFromPassword = (password: string, salt: string): Uint8Array => {
+  return pbkdf2.pbkdf2Sync(password, salt, 5000, 32, 'sha512')
 }
 
 // TODO: move this to a central position
@@ -97,8 +93,8 @@ export const encrypt = (json: any, key: Uint8Array) => {
   const keyPairWrite = box.keyPair();
   const keyPairRead = box.keyPair();
 
-  const writeSalt = generateBcryptSalt();
-  const readSalt = generateBcryptSalt();
+  const writeSalt = generateSalt();
+  const readSalt = generateSalt();
   const keys = {
     write: {
       public: encodeBase64(keyPairWrite.publicKey),
