@@ -45,5 +45,5 @@ export const handler: Handler<APIGatewayEvent> = async (event: APIGatewayEvent) 
     exp: Math.floor(Date.now() / 1000) + (60 * 60),
   }, secrets.jwt.private, { algorithm: 'RS256'});
 
-  return success({token})
+  return success({token, entrySecrets: secrets.entry})
 };
