@@ -104,7 +104,7 @@ resources:
           ViewerCertificate:
             AcmCertificateArn:
               Ref: CertificateApp
-            MinimumProtocolVersion: TLSv1
+            MinimumProtocolVersion: TLSv1.2_2018
             SslSupportMethod: sni-only
           PriceClass: PriceClass_100
           Origins:
@@ -154,7 +154,7 @@ resources:
           ViewerCertificate:
             AcmCertificateArn:
               Ref: CertificateAPI
-            MinimumProtocolVersion: TLSv1
+            MinimumProtocolVersion: TLSv1.2_2018
             SslSupportMethod: sni-only
           PriceClass: PriceClass_100
           Origins:
