@@ -11577,6 +11577,11 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+typeface-dancing-script@^0.0.72:
+  version "0.0.72"
+  resolved "https://registry.yarnpkg.com/typeface-dancing-script/-/typeface-dancing-script-0.0.72.tgz#672e77041ada878f9a1fb0c599ddba06370b68b8"
+  integrity sha512-xShjVM55iGmI14G3EXGf6pkjcGqIAX1Yn41Se8aBxQu/pDtTA2AD258pxC/TVpmBdwwRLESBukEkqMef2/awXQ==
+
 typescript@3.6.4:
   version "3.6.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.6.4.tgz#b18752bb3792bc1a0281335f7f6ebf1bbfc5b91d"
