@@ -1,0 +1,10 @@
+{
+  "name": "pensieve-shared-crypto",
+  "version": "0.1.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "tweetnacl": "^1.0.1",
+    "tweetnacl-util": "^0.15.0"
+  }
+}
