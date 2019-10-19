@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "jsonwebtoken": "^8.5.1",
+    "middy": "^0.30.3",
     "speakeasy": "^2.0.0"
   }
 }
