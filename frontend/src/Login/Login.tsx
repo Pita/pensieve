@@ -63,6 +63,13 @@ type Step = "otp" | "password";
 const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
   // TODO: validation, network communication, auto focus
   const [step, setStep] = useState<Step>("otp");
+  const [labelWidth, setLabelWidth] = React.useState(0);
+  const onLabelRender = useCallback(
+    node => {
+      setLabelWidth(node.offsetWidth);
+    },
+    [setLabelWidth]
+  );
 
   const onNextClick = useCallback(() => {
     if (step === "otp") {
@@ -89,7 +96,9 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
         <>
           <Grid item>
             <FormControl variant="outlined" className={classes.textField}>
-              <InputLabel htmlFor="accessMode">Access Mode</InputLabel>
+              <InputLabel ref={onLabelRender} htmlFor="accessMode">
+                Access Mode
+              </InputLabel>
               <Select
                 native
                 value={"write"}
@@ -98,6 +107,7 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
                   name: "accessMode",
                   id: "accessMode"
                 }}
+                labelWidth={labelWidth}
                 className={classes.textField}
               >
                 <option value="write">Write only access</option>
