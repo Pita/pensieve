@@ -4,13 +4,11 @@
   "main": "dist/index.js",
   "license": "MIT",
   "dependencies": {
-    "pbkdf2": "^3.0.17",
-    "tweetnacl": "^1.0.1",
-    "tweetnacl-util": "^0.15.0"
+    "libsodium-wrappers": "^0.7.6"
   },
   "types": "dist/index.d.ts",
   "devDependencies": {
-    "@types/pbkdf2": "^3.0.0",
+    "@types/libsodium-wrappers": "^0.7.6",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.4"
   },

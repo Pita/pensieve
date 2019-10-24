@@ -1,33 +1,6 @@
-import { secretbox, randomBytes, box, hash } from "tweetnacl";
-import { decodeUTF8, encodeBase64 } from "tweetnacl-util";
 import prompts from "prompts";
 import * as fs from "fs";
-import pbkdf2 from "pbkdf2";
-
-const newNonce = () => randomBytes(secretbox.nonceLength);
-
-const generateSalt = () => {
-  return encodeBase64(randomBytes(32));
-};
-
-const keyFromPassword = (password: string, salt: string): Uint8Array => {
-  // TODO: increase to 10000 as we'll use webworkers for this
-  return pbkdf2.pbkdf2Sync(password, salt, 5000, 32, "sha512");
-};
-
-// TODO: move this to a central position
-export const encrypt = (json: any, key: Uint8Array) => {
-  const nonce = newNonce();
-  const messageUint8 = decodeUTF8(JSON.stringify(json));
-  const box = secretbox(messageUint8, nonce, key);
-
-  const fullMessage = new Uint8Array(nonce.length + box.length);
-  fullMessage.set(nonce);
-  fullMessage.set(box, nonce.length);
-
-  const base64FullMessage = encodeBase64(fullMessage);
-  return base64FullMessage;
-};
+import sharedCrypto from "sharedCrypto";
 
 (async () => {
   const passwordRegex = new RegExp(
@@ -86,27 +59,40 @@ export const encrypt = (json: any, key: Uint8Array) => {
     }
   });
 
-  const keyPairWrite = box.keyPair();
-  const keyPairRead = box.keyPair();
+  const keyPairWrite = await sharedCrypto.async.generateKeyPair();
+  const keyPairRead = await sharedCrypto.async.generateKeyPair();
 
-  const writeSalt = generateSalt();
-  const readSalt = generateSalt();
+  const writeSalt = await sharedCrypto.sync.generatePasswordSalt();
+  const readSalt = await sharedCrypto.sync.generatePasswordSalt();
+
+  const writeKey = await sharedCrypto.sync.generateKeyFromPassword(
+    writePassword,
+    writeSalt
+  );
+  const readKey = await sharedCrypto.sync.generateKeyFromPassword(
+    readPassword,
+    readSalt
+  );
+
+  const encryptedWriteSecret = await sharedCrypto.sync.encrypt(
+    keyPairWrite.privateKey,
+    writeKey
+  );
+  const encryptedReadSecret = await sharedCrypto.sync.encrypt(
+    keyPairRead.privateKey,
+    readKey
+  );
+
   const keys = {
     write: {
-      public: encodeBase64(keyPairWrite.publicKey),
-      secretEncrypted: encrypt(
-        encodeBase64(keyPairWrite.secretKey),
-        keyFromPassword(writePassword, writeSalt)
-      ),
-      secretPasswordSalt: writeSalt
+      public: sharedCrypto.helper.to_base64(keyPairWrite.publicKey),
+      secretEncrypted: sharedCrypto.helper.to_base64(encryptedWriteSecret),
+      secretPasswordSalt: sharedCrypto.helper.to_base64(writeSalt)
     },
     read: {
-      public: encodeBase64(keyPairRead.publicKey),
-      secretEncrypted: encrypt(
-        encodeBase64(keyPairRead.secretKey),
-        keyFromPassword(readPassword, readSalt)
-      ),
-      secretPasswordSalt: readSalt
+      public: sharedCrypto.helper.to_base64(keyPairRead.publicKey),
+      secretEncrypted: sharedCrypto.helper.to_base64(encryptedReadSecret),
+      secretPasswordSalt: sharedCrypto.helper.to_base64(readSalt)
     }
   };
 
