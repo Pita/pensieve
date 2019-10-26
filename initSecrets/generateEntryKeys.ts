@@ -85,14 +85,16 @@ import sharedCrypto from "sharedCrypto";
 
   const keys = {
     write: {
-      public: sharedCrypto.helper.to_base64(keyPairWrite.publicKey),
-      secretEncrypted: sharedCrypto.helper.to_base64(encryptedWriteSecret),
-      secretPasswordSalt: sharedCrypto.helper.to_base64(writeSalt)
+      public: await sharedCrypto.helper.to_base64(keyPairWrite.publicKey),
+      secretEncrypted: await sharedCrypto.helper.to_base64(
+        encryptedWriteSecret
+      ),
+      secretPasswordSalt: await sharedCrypto.helper.to_base64(writeSalt)
     },
     read: {
-      public: sharedCrypto.helper.to_base64(keyPairRead.publicKey),
-      secretEncrypted: sharedCrypto.helper.to_base64(encryptedReadSecret),
-      secretPasswordSalt: sharedCrypto.helper.to_base64(readSalt)
+      public: await sharedCrypto.helper.to_base64(keyPairRead.publicKey),
+      secretEncrypted: await sharedCrypto.helper.to_base64(encryptedReadSecret),
+      secretPasswordSalt: await sharedCrypto.helper.to_base64(readSalt)
     }
   };
 

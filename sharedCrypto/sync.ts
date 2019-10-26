@@ -11,7 +11,7 @@ export async function generateKeyFromPassword(
 ) {
   await sodium.ready;
   // ops limit & mem limit have been chosen to be slow, but still reasonably fast on mobile
-  // (300ms on 2019 high end android, 4s on older low end android)
+  // (700ms on 2019 high end android, 4s on older low end android)
   return sodium.crypto_pwhash(
     32,
     password,

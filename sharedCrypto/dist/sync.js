@@ -60,6 +60,8 @@ function generateKeyFromPassword(password, salt) {
                 case 0: return [4 /*yield*/, libsodium_wrappers_1.default.ready];
                 case 1:
                     _a.sent();
+                    // ops limit & mem limit have been chosen to be slow, but still reasonably fast on mobile
+                    // (700ms on 2019 high end android, 4s on older low end android)
                     return [2 /*return*/, libsodium_wrappers_1.default.crypto_pwhash(32, password, salt, libsodium_wrappers_1.default.crypto_pwhash_OPSLIMIT_MIN, libsodium_wrappers_1.default.crypto_pwhash_MEMLIMIT_INTERACTIVE, libsodium_wrappers_1.default.crypto_pwhash_ALG_ARGON2ID13)];
             }
         });

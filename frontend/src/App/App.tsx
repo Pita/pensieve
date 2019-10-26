@@ -1,5 +1,5 @@
 import Login from "../Login";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import {
   createStyles,
   Theme,
@@ -11,6 +11,10 @@ import { CssBaseline } from "@material-ui/core";
 import { PaletteOptions } from "@material-ui/core/styles/createPalette";
 import { TypographyOptions } from "@material-ui/core/styles/createTypography";
 import { ThemeProvider } from "@material-ui/styles";
+// eslint-disable-next-line
+import CryptoWorker from "worker-loader!./cryptoWorker";
+import PromiseWorker from "promise-worker";
+import { PasswordHashRequest } from "./workerMessages";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -96,6 +100,18 @@ const theme = createMuiTheme({
 });
 
 const App: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
+  useEffect(() => {
+    const worker = new PromiseWorker(new CryptoWorker());
+    const message: PasswordHashRequest = {
+      type: "PasswordHashRequest",
+      password: "hunter2",
+      salt: "ImKHNxZMpKNDWil4HWVRAA"
+    };
+    worker.postMessage(message).then(hash => {
+      alert(hash.key);
+    });
+  }, []);
+
   // TODO: implement routing
   return (
     <ThemeProvider theme={theme}>
