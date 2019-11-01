@@ -36,8 +36,9 @@ const startSession = async event => {
 
   const token = jwt.sign(
     {
-      id: generateId(),
-      exp: Math.floor(Date.now() / 1000) + 60 * 60
+      jti: generateId(),
+      exp: Math.floor(Date.now() / 1000) + 60 * 60,
+      nbf: Date.now() / 1000
     },
     secrets.jwt.private,
     { algorithm: "RS256" }
@@ -46,7 +47,10 @@ const startSession = async event => {
   return {
     statusCode: 200,
     headers: {},
-    body: JSON.stringify({ status: "ok", token, entrySecrets: secrets.entry })
+    body: JSON.stringify({
+      status: "ok",
+      data: { token, entrySecrets: secrets.entry }
+    })
   };
 };
 

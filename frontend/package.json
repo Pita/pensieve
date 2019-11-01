@@ -25,8 +25,8 @@
     "yup": "^0.27.0"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "start": "REACT_APP_BACKEND='http://localhost:5006' react-app-rewired start",
+    "build": "REACT_APP_BACKEND='https://pensieve-development-api.pitam.io/' react-app-rewired build",
     "test": "react-app-rewired test",
     "deploy:dev": "sls s3sync -s development --profile pensieve --aws-profile pensieve"
   },

@@ -16,6 +16,16 @@ import {
   InputLabel,
   Select
 } from "@material-ui/core";
+import { startSession } from "../App/API";
+import { useSessionState } from "../App/SessionContext";
+// eslint-disable-next-line
+import CryptoWorker from "worker-loader!../App/cryptoWorker";
+import PromiseWorker from "promise-worker";
+import {
+  CheckPasswordRequest,
+  CheckPasswordCorrectResponse,
+  CheckPasswordIncorrectResponse
+} from "../App/workerMessages";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -61,9 +71,15 @@ const styles = (theme: Theme) =>
 type Step = "otp" | "password";
 
 const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
-  // TODO: validation, network communication, auto focus
   const [step, setStep] = useState<Step>("otp");
-  const [labelWidth, setLabelWidth] = React.useState(0);
+  const [otp, setOTP] = useState("");
+  const [otpError, setOTPError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sessionState, actions] = useSessionState();
+  const [password, setPassword] = useState("");
+  const [accessMode, setAccessMode] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [labelWidth, setLabelWidth] = useState(0);
   const onLabelRender = useCallback(
     node => {
       setLabelWidth(node.offsetWidth);
@@ -71,11 +87,58 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
     [setLabelWidth]
   );
 
-  const onNextClick = useCallback(() => {
+  const onNext = useCallback(() => {
     if (step === "otp") {
-      setStep("password");
+      setLoading(true);
+      startSession(otp)
+        .then(response => {
+          actions.startSession(response.data.data);
+          setLoading(false);
+          setStep("password");
+        })
+        .catch(e => {
+          setOTPError("Incorrect");
+          setLoading(false);
+        });
+    } else if (step === "password") {
+      setLoading(true);
+      const worker = new PromiseWorker(new CryptoWorker());
+      if (sessionState.state !== "sessionEstablished") {
+        throw new Error("Session was not established");
+      }
+      const secrets =
+        accessMode === "read"
+          ? sessionState.entrySecrets.read
+          : sessionState.entrySecrets.write;
+
+      const message: CheckPasswordRequest = {
+        type: "CheckPasswordRequest",
+        password,
+        salt: secrets.secretPasswordSalt,
+        encryptedKey: secrets.secretEncrypted
+      };
+      worker
+        .postMessage(message)
+        .then(
+          (
+            response:
+              | CheckPasswordCorrectResponse
+              | CheckPasswordIncorrectResponse
+          ) => {
+            setLoading(false);
+            if (response.type === "CheckPasswordCorrectResponse") {
+              alert("success!");
+            } else {
+              setPasswordError("Incorrect password");
+            }
+          }
+        )
+        .catch(e => {
+          setLoading(false);
+          console.error(e);
+        });
     }
-  }, [step, setStep]);
+  }, [otp, step, setStep, actions, password, accessMode, sessionState]);
 
   let fields;
   switch (step) {
@@ -87,6 +150,18 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
             className={classes.textField}
             margin="normal"
             variant="outlined"
+            value={otp}
+            onChange={e => setOTP(e.target.value)}
+            autoFocus
+            disabled={loading}
+            onKeyDown={e => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                onNext();
+              }
+            }}
+            error={!!otpError}
+            helperText={otpError}
           />
         </Grid>
       );
@@ -101,17 +176,21 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
               </InputLabel>
               <Select
                 native
-                value={"write"}
-                onChange={() => {}}
+                value={accessMode}
                 inputProps={{
                   name: "accessMode",
                   id: "accessMode"
                 }}
                 labelWidth={labelWidth}
                 className={classes.textField}
+                autoFocus
+                disabled={loading}
+                onChange={e => {
+                  setAccessMode(e.target.value as string);
+                }}
               >
                 <option value="write">Write only access</option>
-                <option value="write">Read only access</option>
+                <option value="read">Read only access</option>
               </Select>
             </FormControl>
           </Grid>
@@ -121,6 +200,18 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
               className={classes.textField}
               margin="normal"
               variant="outlined"
+              disabled={loading}
+              onKeyDown={e => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onNext();
+                }
+              }}
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              error={!!passwordError}
+              helperText={passwordError}
             />
           </Grid>
         </>
@@ -140,7 +231,7 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
         <Paper className={classes.paper}>
           <Typography className={classes.logo}>Pensieve</Typography>
           <Typography className={classes.slogan}>
-            The secure cloud diary
+            The secure cloud diary...
           </Typography>
 
           <Stepper nonLinear alternativeLabel>
@@ -171,8 +262,9 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
                 variant="contained"
                 size="large"
                 color="primary"
-                onClick={onNextClick}
+                onClick={onNext}
                 className={classes.nextButton}
+                disabled={loading}
               >
                 Next
               </Button>

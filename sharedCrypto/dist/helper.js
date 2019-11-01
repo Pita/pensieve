@@ -60,4 +60,24 @@ exports.to_base64 = function (input) { return __awaiter(void 0, void 0, void 0, 
         }
     });
 }); };
+exports.from_string = function (input) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, libsodium_wrappers_1.default.ready];
+            case 1:
+                _a.sent();
+                return [2 /*return*/, libsodium_wrappers_1.default.from_string(input)];
+        }
+    });
+}); };
+exports.to_string = function (input) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, libsodium_wrappers_1.default.ready];
+            case 1:
+                _a.sent();
+                return [2 /*return*/, libsodium_wrappers_1.default.to_string(input)];
+        }
+    });
+}); };
 //# sourceMappingURL=helper.js.map

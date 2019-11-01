@@ -1,13 +1,19 @@
-export type PasswordHashRequest = {
-  type: "PasswordHashRequest";
+export type CheckPasswordRequest = {
+  type: "CheckPasswordRequest";
   password: string;
   salt: string;
+  encryptedKey: string;
 };
 
-export type PasswordHashResponse = {
-  type: "PasswordHashResponse";
-  key: string;
+export type CheckPasswordCorrectResponse = {
+  type: "CheckPasswordCorrectResponse";
+  decryptedKey: string;
+};
+export type CheckPasswordIncorrectResponse = {
+  type: "CheckPasswordIncorrectResponse";
 };
 
-export type WorkerRequest = PasswordHashRequest;
-export type WorkerResponse = PasswordHashResponse;
+export type WorkerRequest = CheckPasswordRequest;
+export type WorkerResponse =
+  | CheckPasswordCorrectResponse
+  | CheckPasswordIncorrectResponse;
