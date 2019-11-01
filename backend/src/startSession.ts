@@ -1,5 +1,10 @@
 import middy from "middy";
-import { jsonBodyParser, validator, httpErrorHandler } from "middy/middlewares";
+import {
+  jsonBodyParser,
+  validator,
+  httpErrorHandler,
+  cors
+} from "middy/middlewares";
 import speakeasy from "speakeasy";
 import secrets from "./secrets.json";
 import jwt from "jsonwebtoken";
@@ -73,6 +78,7 @@ const inputSchema = {
 export const handler = middy(startSession)
   // TODO: should probably use @middy/function-shield
   // TODO: cors
+  .use(cors())
   .use(jsonBodyParser())
   .use(validator({ inputSchema }))
   .use(httpErrorHandler());

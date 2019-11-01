@@ -38,7 +38,7 @@ functions:
       - http:
           method: post
           path: startSession
-          # cors: true # TODO: security should probably be more tight
+          cors: true # TODO: security should probably be more tight
   status:
     handler: src/status.handler
     description: Check if the api is up
@@ -48,7 +48,7 @@ functions:
       - http:
           method: get
           path: status
-          # cors: true
+          cors: true
   # setEntry:
   #   handler: src/setEntry.handler
   #   description: Sets the entry and writes it to s3
@@ -58,7 +58,7 @@ functions:
   #     - http:
   #         method: post
   #         path: setEntry
-          # cors: true
+  # cors: true
 
 resources:
   Resources:
@@ -66,4 +66,3 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.entriesBucket}
-
