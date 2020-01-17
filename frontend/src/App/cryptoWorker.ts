@@ -7,6 +7,9 @@ import {
   CheckPasswordIncorrectResponse
 } from "./workerMessages";
 import sharedCrypto from "sharedCrypto";
+import uuid from 'uuid/v4';
+
+const keys: Map<string, Uint8Array> = new Map();
 
 registerPromiseWorker(
   async (message: WorkerRequest): Promise<WorkerResponse> => {
@@ -28,9 +31,11 @@ async function checkPassword(
   );
   try {
     const decryptedKey = await sharedCrypto.sync.decrypt(encryptedKey, key);
+    const keyID = uuid();
+    keys.set(keyID, decryptedKey);
     return {
       type: "CheckPasswordCorrectResponse",
-      decryptedKey: await sharedCrypto.helper.to_base64(decryptedKey)
+      keyID
     };
   } catch (e) {
     console.error(e);

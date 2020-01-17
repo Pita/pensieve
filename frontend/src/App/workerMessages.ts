@@ -7,7 +7,7 @@ export type CheckPasswordRequest = {
 
 export type CheckPasswordCorrectResponse = {
   type: "CheckPasswordCorrectResponse";
-  decryptedKey: string;
+  keyID: string;
 };
 export type CheckPasswordIncorrectResponse = {
   type: "CheckPasswordIncorrectResponse";
