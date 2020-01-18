@@ -1,28 +1,40 @@
 import registerPromiseWorker from "promise-worker/register";
 import {
-  WorkerRequest,
-  WorkerResponse,
   CheckPasswordRequest,
-  CheckPasswordCorrectResponse,
-  CheckPasswordIncorrectResponse
+  CheckPasswordResponse,
+  EncryptEntryRequest,
+  EncryptEntryResponse,
+  WorkerFunction
 } from "./workerMessages";
 import sharedCrypto from "sharedCrypto";
 import uuid from 'uuid/v4';
 
 const keys: Map<string, Uint8Array> = new Map();
 
-registerPromiseWorker(
-  async (message: WorkerRequest): Promise<WorkerResponse> => {
-    switch (message.type) {
-      case "CheckPasswordRequest":
-        return await checkPassword(message);
-    }
+const workerCallback: WorkerFunction = async (message: any): Promise<any> => {
+  switch (message.type) {
+    case "CheckPasswordRequest":
+      return await checkPassword(message);
+    case "EncryptEntryRequest":
+      return await encryptEntry(message);
   }
-);
+
+  throw new Error("Unkown message");
+}
+registerPromiseWorker(workerCallback);
+
+async function encryptEntry(
+  message: EncryptEntryRequest
+): Promise<EncryptEntryResponse> {
+  return {
+    type: "EncryptEntryResponse",
+    encryptedEnry: "dummy",
+  };
+}
 
 async function checkPassword(
   message: CheckPasswordRequest
-): Promise<CheckPasswordCorrectResponse | CheckPasswordIncorrectResponse> {
+): Promise<CheckPasswordResponse> {
   const salt = await sharedCrypto.helper.from_base64(message.salt);
   const password = message.password;
   const key = await sharedCrypto.sync.generateKeyFromPassword(password, salt);

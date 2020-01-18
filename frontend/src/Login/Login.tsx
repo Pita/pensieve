@@ -18,14 +18,8 @@ import {
 } from "@material-ui/core";
 import { startSession } from "../App/API";
 import { useSessionState } from "../App/SessionContext";
-// eslint-disable-next-line
-import CryptoWorker from "worker-loader!../App/cryptoWorker";
-import PromiseWorker from "promise-worker";
-import {
-  CheckPasswordRequest,
-  CheckPasswordCorrectResponse,
-  CheckPasswordIncorrectResponse
-} from "../App/workerMessages";
+import {sendMessageToWorker} from "../CryptoWorker/cryptoWorkerController"
+import { CheckPasswordRequest } from "../CryptoWorker/workerMessages";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -102,7 +96,6 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
         });
     } else if (step === "password") {
       setLoading(true);
-      const worker = new PromiseWorker(new CryptoWorker());
       if (sessionState.state !== "sessionEstablished") {
         throw new Error("Session was not established");
       }
@@ -117,14 +110,9 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
         salt: secrets.secretPasswordSalt,
         encryptedKey: secrets.secretEncrypted
       };
-      worker
-        .postMessage(message)
+      sendMessageToWorker(message)
         .then(
-          (
-            response:
-              | CheckPasswordCorrectResponse
-              | CheckPasswordIncorrectResponse
-          ) => {
+          (response) => {
             setLoading(false);
             if (response.type === "CheckPasswordCorrectResponse") {
               alert("success!");
