@@ -12,6 +12,8 @@ import { PaletteOptions } from "@material-ui/core/styles/createPalette";
 import { TypographyOptions } from "@material-ui/core/styles/createTypography";
 import { ThemeProvider } from "@material-ui/styles";
 import { SessionProvider } from "./SessionContext";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Write from "../Write";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -97,18 +99,26 @@ const theme = createMuiTheme({
 });
 
 const App: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
-  // TODO: implement routing
   return (
-    <SessionProvider>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <div className={classes.background}>
-          <div className={classes.pageContainer}>
-            <Login />
+    <Router>
+      <SessionProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <div className={classes.background}>
+            <div className={classes.pageContainer}>
+              <Switch>
+                <Route path="/write">
+                  <Write />
+                </Route>
+                <Route path="/">
+                  <Login />
+                </Route>
+              </Switch>
+            </div>
           </div>
-        </div>
-      </ThemeProvider>
-    </SessionProvider>
+        </ThemeProvider>
+      </SessionProvider>
+    </Router>
   );
 };
 

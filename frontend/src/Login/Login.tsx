@@ -18,8 +18,9 @@ import {
 } from "@material-ui/core";
 import { startSession } from "../App/API";
 import { useSessionState } from "../App/SessionContext";
-import {sendMessageToWorker} from "../CryptoWorker/cryptoWorkerController"
+import { sendMessageToWorker } from "../CryptoWorker/cryptoWorkerController";
 import { CheckPasswordRequest } from "../CryptoWorker/workerMessages";
+import { useHistory } from "react-router-dom";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -76,10 +77,11 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
   const [labelWidth, setLabelWidth] = useState(0);
   const onLabelRender = useCallback(
     node => {
-      setLabelWidth(node.offsetWidth);
+      node && setLabelWidth(node.offsetWidth);
     },
     [setLabelWidth]
   );
+  const history = useHistory();
 
   const onNext = useCallback(() => {
     if (step === "otp") {
@@ -111,22 +113,29 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
         encryptedKey: secrets.secretEncrypted
       };
       sendMessageToWorker(message)
-        .then(
-          (response) => {
-            setLoading(false);
-            if (response.type === "CheckPasswordCorrectResponse") {
-              alert("success!");
-            } else {
-              setPasswordError("Incorrect password");
-            }
+        .then(response => {
+          setLoading(false);
+          if (response.type === "CheckPasswordCorrectResponse") {
+            history.replace("/write");
+          } else {
+            setPasswordError("Incorrect password");
           }
-        )
+        })
         .catch(e => {
           setLoading(false);
           console.error(e);
         });
     }
-  }, [otp, step, setStep, actions, password, accessMode, sessionState]);
+  }, [
+    otp,
+    step,
+    setStep,
+    actions,
+    password,
+    accessMode,
+    sessionState,
+    history
+  ]);
 
   let fields;
   switch (step) {
