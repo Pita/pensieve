@@ -1,64 +1,25 @@
 import React, { createContext, useContext, useReducer } from "react";
 import { StartSessionResponse } from "./API";
 
-type State =
-  | {
-      state: "initial";
-    }
-  | {
-      state: "sessionEstablished";
-      token: string;
-      entrySecrets: {
-        write: {
-          public: string;
-          secretEncrypted: string;
-          secretPasswordSalt: string;
-        };
-        read: {
-          public: string;
-          secretEncrypted: string;
-          secretPasswordSalt: string;
-        };
+type State = {
+  sessionData?: {
+    token: string;
+    entrySecrets: {
+      write: {
+        public: string;
+        secretEncrypted: string;
+        secretPasswordSalt: string;
       };
-    }
-  | {
-      state: "readAccess";
-      token: string;
-      entrySecrets: {
-        write: {
-          public: string;
-          secretEncrypted: string;
-          secretPasswordSalt: string;
-        };
-        read: {
-          public: string;
-          secretDecrypted_SENSITIVE: string;
-          secretEncrypted: string;
-          secretPasswordSalt: string;
-        };
-      };
-    }
-  | {
-      state: "writeAccess";
-      token: string;
-      entrySecrets: {
-        write: {
-          public: string;
-          secretDecrypted_SENSITIVE: string;
-          secretEncrypted: string;
-          secretPasswordSalt: string;
-        };
-        read: {
-          public: string;
-          secretEncrypted: string;
-          secretPasswordSalt: string;
-        };
+      read: {
+        public: string;
+        secretEncrypted: string;
+        secretPasswordSalt: string;
       };
     };
-
-const initialState: State = {
-  state: "initial"
+  };
 };
+
+const initialState: State = {};
 
 type Action = { type: "startSession"; sessionData: StartSessionResponse };
 
@@ -77,8 +38,8 @@ const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "startSession":
       return {
-        state: "sessionEstablished",
-        ...action.sessionData
+        ...state,
+        sessionData: action.sessionData
       };
     default:
       return state;

@@ -98,13 +98,14 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
         });
     } else if (step === "password") {
       setLoading(true);
-      if (sessionState.state !== "sessionEstablished") {
+      const { sessionData } = sessionState;
+      if (sessionData == null) {
         throw new Error("Session was not established");
       }
       const secrets =
         accessMode === "read"
-          ? sessionState.entrySecrets.read
-          : sessionState.entrySecrets.write;
+          ? sessionData.entrySecrets.read
+          : sessionData.entrySecrets.write;
 
       const message: CheckPasswordRequest = {
         type: "CheckPasswordRequest",
@@ -228,7 +229,7 @@ const Login: FunctionComponent<WithStyles<typeof styles>> = ({ classes }) => {
         <Paper className={classes.paper}>
           <Typography className={classes.logo}>Pensieve</Typography>
           <Typography className={classes.slogan}>
-            The secure cloud diary...
+            The secure cloud diary
           </Typography>
 
           <Stepper nonLinear alternativeLabel>
