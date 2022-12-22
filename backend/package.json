@@ -20,7 +20,7 @@
     "deploy:prod": "sls deploy -s development --profile pensieve --aws-profile pensieve"
   },
   "dependencies": {
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "middy": "^0.30.3",
     "speakeasy": "^2.0.0"
   }
